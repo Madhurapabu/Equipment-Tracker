@@ -1,8 +1,30 @@
 import React from 'react';
-import { Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton, FormControl, FormLabel, Input, Button, Center } from '@chakra-ui/react'; // Import necessary Chakra UI components
+import { 
+  Card,
+  CardHeader, 
+  Heading, 
+  CardBody, 
+  CardFooter, 
+  Button,
+  Modal,
+  ModalBody,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
+  FormControl,
+  FormLabel,
+  Input,
+  Center  
+} from '@chakra-ui/react'; // Import necessary Chakra UI components
 
 function EquipmentBookingModal({ isOpen, onClose, onSubmit }) {
   return (
+    <Card>
+    <CardHeader>
+      <Heading size='xl'> Booking </Heading>
+      <Heading size='md'>  Test Equipment </Heading>
+    </CardHeader>
+    <CardBody>
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
@@ -23,6 +45,11 @@ function EquipmentBookingModal({ isOpen, onClose, onSubmit }) {
         </ModalBody>
       </ModalContent>
     </Modal>
+    </CardBody>
+    <CardFooter>
+      <Button> Book Test Equipment</Button>
+    </CardFooter>
+  </Card>
   );
 }
 

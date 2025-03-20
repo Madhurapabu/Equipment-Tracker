@@ -7,6 +7,9 @@ import AppDrawer from './pages/AppDrawer'; // Import your drawer component
 import AddEquipment from './pages/AddEquipment';
 import CheckOutItem from './pages/CheckOutItem';
 import History from './pages/History';
+import EqDetail from './pages/EqDetail'
+import EquipmentBookingModal from './pages/EquipmentBookingModal';
+import Eq_Booking from './pages/Eq_booking'
 import { IconButton } from '@chakra-ui/react'
 import { HamburgerIcon } from '@chakra-ui/icons'
 
@@ -42,6 +45,9 @@ function App() {
           <Route path="/add-equipment" element={<AddEquipment />} />
           <Route path='/checkout-item' element={<CheckOutItem/>}/>
           <Route path='/checkout-history' element={<History/>}/>
+          <Route path='/equipment-details' element={<EqDetail/>}/>
+          <Route path='/equipment-booking' element={<Eq_Booking/>}/>
+
         </Routes>
       </Router>
     </ChakraProvider>

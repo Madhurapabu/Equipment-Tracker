@@ -1,7 +1,11 @@
+// src/pages/Dashboard.js
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form'; 
 import { db } from '../firebase-config';
+import Eq_Calibration from './Eq_detail_card';
+import Eq_Booking from './Eq_booking_card';
 import { collection, getDocs, addDoc, updateDoc, serverTimestamp, doc, where, query, onSnapshot } from '@firebase/firestore';
 import {
   Card,
@@ -30,6 +34,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import EquipmentBookingModal from './EquipmentBookingModal';
+import BookingCalendar from '../components/BookingCalendar'; 
 
 function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -140,14 +145,7 @@ function Dashboard() {
       console.error('Error updating documents: ', error);
     }
   };
-  // Define the handleSubmit function
-  const handleSubmit = async (data) => {
-    try {
-      // Your form submission logic here
-    } catch (error) {
-      console.error('Error submitting form: ', error);
-    }
-  };
+
   const [equipment, setEquipment] = useState([]);
   const usersCollectionRef = collection(db, "equipment");
   
@@ -164,16 +162,14 @@ function Dashboard() {
 
   return (
     <div>
-      
       <SimpleGrid spacing={4} templateColumns='repeat(auto-fill, minmax(200px, 5fr))'>
         <Card>
-
           <CardHeader>
-            <Heading size='md'> Check Out</Heading>
+            <Heading size='md'> Borrowing </Heading>
             <Heading size='sm'> Test Equipment </Heading>
           </CardHeader>
           <CardBody>
-            <Text>Fill the form before check out every test equipment</Text>
+            <Text>Fill the form before borrowing every test equipment</Text>
           </CardBody>
           <CardFooter>
             <Button mt={4} onClick={() => openModal('checkOut')}>
@@ -181,10 +177,9 @@ function Dashboard() {
             </Button>
           </CardFooter>
         </Card>
-
         <Card>
           <CardHeader>
-            <Heading size='xl'> Check In </Heading>
+            <Heading size='xl'> Return </Heading>
             <Heading size='md'>  Test Equipment </Heading>
           </CardHeader>
           <CardBody>
@@ -194,19 +189,12 @@ function Dashboard() {
           </CardFooter>
         </Card>
 
-        <EquipmentBookingModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={handleSubmit} // Pass your handleSubmit function
-        register={register} // Pass your form register function
-        errors={errors} // Pass your form errors
-        isSubmitting={isSubmitting} // Pass your form submission state
-        modalType={modalType}
-        equipment={equipment}
-        setSelectedEquipment={setSelectedEquipment}
-      />
+        <Eq_Calibration />
+        <Eq_Booking />
 
       </SimpleGrid>
+
+      <BookingCalendar />
 
       <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={closeModal} size="xl">
         <ModalOverlay />
@@ -224,18 +212,21 @@ function Dashboard() {
                       required: 'This is required',
                     })}
                   >
-                    <option value="Ranal">Ranal</option>
-                    <option value="Chalangana">Chalangana</option>
-                    <option value="Madhura">Madhura</option>
-                    <option value="Dananjaya">Dananjaya</option>
-                    <option value="Nimali">Nimali</option>
-                    <option value="Haritha">Haritha</option>
-                    <option value="Hasitha">Hasitha</option>
-                    <option value="Charith">Charith</option>
-                    <option value="Chamika">Chamika</option>
-                    <option value="Suwithi">Suwithi</option>
-                    <option value="Sajana">Sajana</option>
-                    <option value="Sudharaka">Sudharaka</option>
+                      <option value="Chalangana">Chalangana</option>
+                      <option value="Madhura">Madhura</option>
+                      <option value="Dananjaya">Dananjaya</option>
+                      <option value="Nimali">Nimali</option>
+                      <option value="Haritha">Haritha</option>
+                      <option value="Charith">Charith</option>
+                      <option value="Chamika">Chamika</option>
+                      <option value="Suwithi">Suwithi</option>
+                      <option value="Sajana">Sajana</option>
+                      <option value="Hasitha_J">Hasitha J</option>
+                      <option value="Ravindu">Ravindu</option>
+                      <option value="Kasun">Kasun</option>
+                      <option value="Ravindu_F">Ravindu F</option>
+                      <option value="Theekshana">Theekshana</option>
+                      <option value="Sajeew">Sajeew</option>
                   </Select>
                   <FormLabel htmlFor='name' mt={4}>Reason for Check out</FormLabel>
                   <Input
@@ -283,18 +274,21 @@ function Dashboard() {
                         required: 'This is required',
                       })}
                     >
-                      <option value="Ranal">Ranal</option>
                       <option value="Chalangana">Chalangana</option>
                       <option value="Madhura">Madhura</option>
                       <option value="Dananjaya">Dananjaya</option>
                       <option value="Nimali">Nimali</option>
                       <option value="Haritha">Haritha</option>
-                      <option value="Hasitha">Hasitha</option>
                       <option value="Charith">Charith</option>
                       <option value="Chamika">Chamika</option>
                       <option value="Suwithi">Suwithi</option>
                       <option value="Sajana">Sajana</option>
-                      <option value="Sudharaka">Sudharaka</option>
+                      <option value="Hasitha_J">Hasitha J</option>
+                      <option value="Ravindu">Ravindu</option>
+                      <option value="Kasun">Kasun</option>
+                      <option value="Ravindu_F">Ravindu F</option>
+                      <option value="Theekshana">Theekshana</option>
+                      <option value="Sajeew">Sajeew</option>
                     </Select>
                   <FormLabel htmlFor='testEquipment' mt={4}>Test Equipment</FormLabel>
                   <CheckboxGroup onChange={setSelectedEquipment} value={selectedEquipment}>

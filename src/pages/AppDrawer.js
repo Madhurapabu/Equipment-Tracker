@@ -34,16 +34,21 @@ function AppDrawer({ isOpen, onClose }) {
                 <Button onClick={handleDashboardClick}> Dashboard</Button>
               </Link>
 
-              <Link to="/add-equipment">
-                <Button onClick={handleDashboardClick}> Add Equipment</Button>
-              </Link>
-
               <Link to="/checkout-item">
                 <Button onClick={handleDashboardClick}> Check Out Items </Button>
               </Link>
 
               <Link to="/checkout-history">
                 <Button onClick={handleDashboardClick}> Check Out History </Button>
+              </Link>
+
+              <Link to="/equipment-booking">
+                <Button onClick={handleDashboardClick}> Equipment Reservation </Button>
+              </Link>
+
+              
+              <Link to="/add-equipment">
+                <Button onClick={handleDashboardClick}> Add Equipment</Button>
               </Link>
               
               {/* <Box h='40px' bg='tomato'>

@@ -1,0 +1,56 @@
+/* src/components/BookingCalendar.css */
+
+.booking-calendar {
+    margin: 20px auto;  /* Center the calendar horizontally */
+    max-width: 90%;  /* Ensure the calendar does not exceed the container width */
+  }
+  
+  .react-calendar {
+    width: 100%;  /* Make the calendar take full width of the container */
+    background: white;  /* Set background color */
+    border-radius: 10px;  /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Add a subtle shadow */
+    font-family: Arial, Helvetica, sans-serif;  /* Use a clean font */
+    font-size: 16px;  /* Increase font size for better readability */
+  }
+  
+  .react-calendar__tile {
+    padding: 10px 0;  /* Add padding to each date tile */
+    height: auto;  /* Adjust height based on content */
+    display: flex;
+    flex-direction: column;  /* Ensure children are stacked vertically */
+    align-items: center;  /* Center children horizontally */
+  }
+  
+  .react-calendar__tile--now {
+    background: #ffeb3b;  /* Highlight the current date */
+    color: black;
+  }
+  
+  .react-calendar__tile--active {
+    background: #4caf50;  /* Highlight selected date */
+    color: white;
+  }
+  
+  .react-calendar__tile--active:enabled:hover,
+  .react-calendar__tile--active:enabled:focus {
+    background: #388e3c;  /* Darker shade on hover/focus */
+  }
+  
+  .booking-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0 0;  /* Add a small margin at the top */
+    width: 100%;  /* Ensure the list takes full width */
+    text-align: center;  /* Center align text */
+  }
+  
+  .booking-list li {
+    background-color: #ffdddd;
+    border: 1px solid #ffcccc;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin: 1px 0;
+    font-size: 12px;  /* Smaller font size for booking items */
+  }
+  
