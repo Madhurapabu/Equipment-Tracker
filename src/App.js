@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { auth } from './firebase-config'; // Import Firebase authentication
-import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase-config';
+import { onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import './App.css';
 import Dashboard from './pages/Dashboard';
 import AppDrawer from './pages/AppDrawer';
@@ -19,12 +19,17 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [user, setUser] = useState(null);
-  
+  const [loading, setLoading] = useState(true); // Ensure we wait for Firebase Auth check
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    // Set Firebase auth persistence
+    setPersistence(auth, browserLocalPersistence).then(() => {
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+        setLoading(false); // Stop loading after auth check
+      });
+      return () => unsubscribe();
     });
-    return () => unsubscribe();
   }, []);
 
   const handleDrawerOpen = () => {
@@ -34,6 +39,8 @@ function App() {
   const handleDrawerClose = () => {
     setIsDrawerOpen(false);
   };
+
+  if (loading) return <p>Loading...</p>; // Prevent flashing login screen
 
   return (
     <ChakraProvider>

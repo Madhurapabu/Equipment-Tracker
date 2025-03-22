@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { auth, db } from "../firebase-config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -9,76 +6,151 @@ import {
   FormControl,
   FormLabel,
   Input,
+  VStack,
   Heading,
   Text,
-  VStack,
-  Alert,
-  AlertIcon,
+  Link,
+  Card,
+  CardBody,
+  useToast,
 } from "@chakra-ui/react";
+import { auth, db } from "../firebase-config"; // Import Firestore DB
+import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 const Signup = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [empNumber, setEmpNumber] = useState("");
-  const [error, setError] = useState("");
-
+  const [employeeNumber, setEmployeeNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      // Save user details in Firestore
       await setDoc(doc(db, "users", user.uid), {
         firstName,
         lastName,
-        empNumber,
+        employeeNumber,
         email,
         uid: user.uid,
       });
-      alert("Signup Successful!");
-      navigate("/");
+
+      // Send email verification
+      await sendEmailVerification(user);
+      toast({
+        title: "Verification email sent!",
+        description: "Check your inbox and verify your email before logging in.",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+
+      // Log the user out to force email verification
+      await signOut(auth);
+      navigate("/login");
     } catch (error) {
-      setError(error.message);
+      toast({
+        title: "Signup failed",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minH="100vh" bgGradient="linear(to-r, blue.500, purple.500)">
-      <Box bg="white" p={8} borderRadius="lg" shadow="lg" maxW="md" w="full">
-        <Heading size="lg" textAlign="center" color="blue.600">Sign Up</Heading>
-        {error && (
-          <Alert status="error" mt={4} borderRadius="md">
-            <AlertIcon />
-            {error}
-          </Alert>
-        )}
-        <VStack as="form" spacing={4} mt={4} onSubmit={handleSignup}>
-          <FormControl>
-            <FormLabel>First Name</FormLabel>
-            <Input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Last Name</FormLabel>
-            <Input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Employee Number</FormLabel>
-            <Input type="text" value={empNumber} onChange={(e) => setEmpNumber(e.target.value)} required />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Email</FormLabel>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Password</FormLabel>
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </FormControl>
-          <Button colorScheme="blue" width="full" type="submit">Sign Up</Button>
-        </VStack>
-      </Box>
+    <Box minH="100vh" display="flex" justifyContent="center" alignItems="center" bg="gray.100">
+      <Card width="sm" boxShadow="lg" borderRadius="lg" bg="white">
+        <CardBody>
+          <VStack spacing={4} align="stretch">
+            <Heading size="lg" textAlign="center">
+              Create an Account
+            </Heading>
+            <Text fontSize="sm" color="gray.500" textAlign="center">
+              Sign up to manage your equipment easily.
+            </Text>
+
+            <FormControl id="first-name">
+              <FormLabel>First Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter your first name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl id="last-name">
+              <FormLabel>Last Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter your last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl id="employee-number">
+              <FormLabel>Employee Number</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter your employee number"
+                value={employeeNumber}
+                onChange={(e) => setEmployeeNumber(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl id="email">
+              <FormLabel>Email Address</FormLabel>
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl id="password">
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
+
+            <Button
+              colorScheme="teal"
+              size="lg"
+              onClick={handleSignup}
+              isLoading={loading}
+            >
+              Sign Up
+            </Button>
+
+            <Text fontSize="sm" textAlign="center">
+              Already have an account?{" "}
+              <Link color="teal.500" onClick={() => navigate("/login")}>
+                Log in
+              </Link>
+            </Text>
+          </VStack>
+        </CardBody>
+      </Card>
     </Box>
   );
 };

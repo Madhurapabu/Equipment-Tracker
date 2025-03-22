@@ -1,56 +1,52 @@
 import React, { useState } from "react";
-import { auth, db } from "../firebase-config"; 
+import { auth } from "../firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { Box, Button, Input, FormControl, FormLabel, Text, Alert, AlertIcon } from "@chakra-ui/react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [userData, setUserData] = useState(null);
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
-      // Sign in user
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Retrieve user details from Firestore
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        setUserData(userDoc.data());
-        alert(`Welcome, ${userDoc.data().firstName} ${userDoc.data().lastName}!`);
-        navigate("/dashboard");
-      } else {
-        console.log("User data not found!");
+      if (!userCredential.user.emailVerified) {
+        setError("Please verify your email before logging in.");
+        return;
       }
+      navigate("/");
     } catch (error) {
-      setError(error.message);
+      if (error.code === "auth/user-not-found") {
+        setError("No account found. Redirecting to signup...");
+        setTimeout(() => navigate("/signup"), 3000);
+      } else {
+        setError(error.message);
+      }
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <Box p={8} maxWidth="400px" mx="auto">
+      <Text fontSize="2xl" fontWeight="bold" mb={4}>Login</Text>
+      {error && <Alert status="error"><AlertIcon />{error}</Alert>}
       <form onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Login</button>
+        <FormControl isRequired>
+          <FormLabel>Email</FormLabel>
+          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel>Password</FormLabel>
+          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </FormControl>
+        <Button mt={4} colorScheme="teal" type="submit">Login</Button>
       </form>
-
-      {userData && (
-        <div>
-          <h3>Welcome, {userData.firstName} {userData.lastName}</h3>
-          <p>Employee Number: {userData.empNumber}</p>
-        </div>
-      )}
-    </div>
+      <Text mt={4}>Don't have an account? <Button variant="link" onClick={() => navigate("/signup")}>Sign Up</Button></Text>
+    </Box>
   );
 };
 

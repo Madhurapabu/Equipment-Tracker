@@ -1,5 +1,3 @@
-// AppDrawer.js
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -18,6 +16,18 @@ function AppDrawer({ isOpen, onClose }) {
     const handleDashboardClick = () => {
         onClose(); // Close the drawer when Dashboard button is clicked
     }
+
+    const handleLogout = () => {
+        // Add your logout logic here, like clearing authentication tokens
+        console.log("Logging out...");
+        // Example: If you're using localStorage/sessionStorage, you can clear them
+        // localStorage.removeItem('authToken');
+        // sessionStorage.removeItem('authToken');
+        
+        // Redirect to the login page or home page
+        window.location.href = '/login'; // Example redirect
+    }
+
   return (
     <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
       <DrawerOverlay />
@@ -46,17 +56,12 @@ function AppDrawer({ isOpen, onClose }) {
                 <Button onClick={handleDashboardClick}> Equipment Reservation </Button>
               </Link>
 
-              
               <Link to="/add-equipment">
                 <Button onClick={handleDashboardClick}> Add Equipment</Button>
               </Link>
               
-              {/* <Box h='40px' bg='tomato'>
-                2
-              </Box>
-              <Box h='40px' bg='pink.100'>
-                3
-              </Box> */}
+              {/* Log Out Button */}
+              <Button onClick={handleLogout} colorScheme="red">Log Out</Button>
             </VStack>
         </DrawerBody>
       </DrawerContent>
