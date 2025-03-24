@@ -1,75 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { auth } from './firebase-config';
-import { onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import './App.css';
-import Dashboard from './pages/Dashboard';
-import AppDrawer from './pages/AppDrawer';
-import AddEquipment from './pages/AddEquipment';
-import CheckOutItem from './pages/CheckOutItem';
-import History from './pages/History';
-import EqDetail from './pages/EqDetail';
-import Eq_Booking from './pages/Eq_booking';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import { IconButton } from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
+import React, { useState, useEffect } from "react";
+import { ChakraProvider } from "@chakra-ui/react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { auth } from "./firebase-config";
+import { onAuthStateChanged, setPersistence, browserLocalPersistence } from "firebase/auth";
+import "./App.css";
+import Dashboard from "./pages/Dashboard";
+import AddEquipment from "./pages/AddEquipment";
+import CheckOutItem from "./pages/CheckOutItem";
+import History from "./pages/History";
+import EqDetail from "./pages/EqDetail";
+import Eq_Booking from "./pages/Eq_booking";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Layout from "./components/Layout";
 
 function App() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Ensure we wait for Firebase Auth check
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set Firebase auth persistence
-    setPersistence(auth, browserLocalPersistence).then(() => {
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    // Set up Firebase auth persistence and listen for auth state changes
+    const initAuth = async () => {
+      await setPersistence(auth, browserLocalPersistence);
+      onAuthStateChanged(auth, (currentUser) => {
         setUser(currentUser);
-        setLoading(false); // Stop loading after auth check
+        setLoading(false); // Stop loading when auth check completes
       });
-      return () => unsubscribe();
-    });
+    };
+
+    initAuth();
   }, []);
 
-  const handleDrawerOpen = () => {
-    setIsDrawerOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setIsDrawerOpen(false);
-  };
-
-  if (loading) return <p>Loading...</p>; // Prevent flashing login screen
+  if (loading) return <p>Loading...</p>; // Show loading only until auth check completes
 
   return (
     <ChakraProvider>
       <Router>
-        {user && (
-          <div>
-            <IconButton
-              isRound={true}
-              variant='solid'
-              colorScheme='teal'
-              aria-label='Menu'
-              fontSize='20px'
-              icon={<HamburgerIcon />}
-              onClick={handleDrawerOpen} mx={4} my={4}
-            />
-            <AppDrawer isOpen={isDrawerOpen} onClose={handleDrawerClose} />
-          </div>
-        )}
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          
-          {/* Protected Routes */}
-          <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-          <Route path="/add-equipment" element={user ? <AddEquipment /> : <Navigate to="/login" />} />
-          <Route path="/checkout-item" element={user ? <CheckOutItem /> : <Navigate to="/login" />} />
-          <Route path="/checkout-history" element={user ? <History /> : <Navigate to="/login" />} />
-          <Route path="/equipment-details" element={user ? <EqDetail /> : <Navigate to="/login" />} />
-          <Route path="/equipment-booking" element={user ? <Eq_Booking /> : <Navigate to="/login" />} />
+
+          {/* Protected Routes (Wrapped Inside Layout) */}
+          {user ? (
+            <>
+              <Route path="/" element={<Layout><Dashboard /></Layout>} />
+              <Route path="/add-equipment" element={<Layout><AddEquipment /></Layout>} />
+              <Route path="/checkout-item" element={<Layout><CheckOutItem /></Layout>} />
+              <Route path="/checkout-history" element={<Layout><History /></Layout>} />
+              <Route path="/equipment-details" element={<Layout><EqDetail /></Layout>} />
+              <Route path="/equipment-booking" element={<Layout><Eq_Booking /></Layout>} />
+            </>
+          ) : (
+            <Route path="*" element={<Navigate to="/login" />} />
+          )}
         </Routes>
       </Router>
     </ChakraProvider>
